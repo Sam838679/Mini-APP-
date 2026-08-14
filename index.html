@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NEXORA Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">NEXORA</div>
+        <h1>Investment Hub</h1>
+      </div>
+      <div class="avatar">N</div>
+    </header>
+
+    <main>
+      <section class="balance-card">
+        <div class="balance-label">Số dư khả dụng</div>
+        <div class="balance">1,250,000 <span>USDT</span></div>
+        <div class="balance-note">Tài khoản Demo</div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Dự án nổi bật</h2>
+          <button class="text-btn" onclick="showPage('projects')">Xem tất cả</button>
+        </div>
+
+        <div class="project-card" onclick="openProject('Nexora Growth Fund')">
+          <div class="project-icon">NX</div>
+          <div class="project-main">
+            <div class="project-title">Nexora Growth Fund</div>
+            <div class="project-desc">Dự án đầu tư chiến lược</div>
+            <div class="project-meta">
+              <span>Thời hạn 90 ngày</span>
+              <strong>+12.5%</strong>
+            </div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+
+        <div class="project-card" onclick="openProject('Nexora Strategic Fund')">
+          <div class="project-icon purple">NS</div>
+          <div class="project-main">
+            <div class="project-title">Nexora Strategic Fund</div>
+            <div class="project-desc">Danh mục tăng trưởng</div>
+            <div class="project-meta">
+              <span>Thời hạn 180 ngày</span>
+              <strong>+25%</strong>
+            </div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+      </section>
+
+      <section class="quick-actions">
+        <button onclick="showPage('projects')">
+          <span>＋</span>
+          <small>Tạo lệnh</small>
+        </button>
+        <button onclick="showPage('orders')">
+          <span>☷</span>
+          <small>Lịch sử</small>
+        </button>
+        <button onclick="showPage('profile')">
+          <span>◉</span>
+          <small>Tài khoản</small>
+        </button>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Lệnh gần đây</h2>
+          <button class="text-btn" onclick="showPage('orders')">Tất cả</button>
+        </div>
+        <div id="recent-orders"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" onclick="showPage('home')"><span>⌂</span>Trang chủ</button>
+      <button onclick="showPage('projects')"><span>◈</span>Dự án</button>
+      <button onclick="showPage('orders')"><span>☷</span>Lệnh</button>
+      <button onclick="showPage('profile')"><span>◉</span>Tài khoản</button>
+    </nav>
+  </div>
+
+  <div class="modal hidden" id="project-modal">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-sheet">
+      <button class="close" onclick="closeModal()">×</button>
+      <div class="modal-icon">NX</div>
+      <div class="eyebrow">PROJECT</div>
+      <h2 id="modal-project-name">Nexora Growth Fund</h2>
+      <p class="muted">Tham gia dự án bằng cách nhập số tiền và tạo lệnh.</p>
+
+      <div class="input-wrap">
+        <label>Số tiền đầu tư</label>
+        <div class="amount-input">
+          <input id="amount" type="number" min="1" placeholder="0">
+          <span>USDT</span>
+        </div>
+      </div>
+
+      <div class="summary">
+        <div><span>Số dư hiện tại</span><strong>1,250,000 USDT</strong></div>
+        <div><span>Trạng thái</span><strong class="pending">Chờ admin duyệt</strong></div>
+      </div>
+
+      <button class="primary-btn" onclick="createOrder()">Tạo lệnh đầu tư</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
