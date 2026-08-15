@@ -453,11 +453,295 @@ let orders = [];
 ========================================= */
 
 function getUserId() {
-    return localStorage.getItem("nexora_user_id");
+    function updateHomeAuthState() {
+        async function loadHomeBalance() {
+
+    const balanceElement =
+        document.getElementById("home-balance");
+
+    if (!balanceElement) {
+        return;
+    }
+
+    const userId =
+        getUserId();
+
+    if (!userId) {
+
+        balanceElement.textContent = "0";
+
+        return;
+    }
+
+    try {
+
+        const user =
+            await api(`/users/${userId}`);
+
+        const balance =
+            Number(user.balance || 0);
+
+        balanceElement.textContent =
+            balance.toLocaleString("en-US", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+
+    } catch (error) {
+
+        console.error(
+            "LOAD HOME BALANCE ERROR:",
+            error
+        );
+
+        balanceElement.textContent = "0";
+    }
 }
 
+    const loginButton =
+        document.getElementById("home-login-btn");
+
+    const balanceCard =
+        document.getElementById("home-balance-card");
+
+    const userId =
+        getUserId();
+
+    if (userId) {
+
+        if (loginButton) {
+            loginButton.style.display = "none";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.remove("hidden");
+        }
+
+    } else {
+
+        if (loginButton) {
+            loginButton.style.display = "";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.add("hidden");
+        }
+    }
+}
+    function updateHomeAuthState() {
+
+    const loginButton =
+        document.getElementById(
+            "home-login-btn"
+        );
+
+    const balanceCard =
+        document.getElementById(
+            "home-balance-card"
+        );
+
+    const userId =
+        getUserId();
+if (userId) {
+
+        if (loginButton) {
+            loginButton.style.display = "none";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.remove(
+                "hidden"
+            );
+        }
+
+    } else {
+
+        if (loginButton) {
+            loginButton.style.display = "";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.add(
+                "hidden"
+            );
+        }
+    }
+}
+async function loadHomeBalance() {
+
+    const balanceElement =
+        document.getElementById("home-balance");
+
+    if (!balanceElement) {
+        return;
+    }
+
+    const userId =
+        getUserId();
+
+    if (!userId) {
+
+        balanceElement.textContent = "0";
+
+        return;
+    }
+
+    try {
+
+        const user =
+            await api(`/users/${userId}`);
+
+        const balance =
+            Number(user.balance || 0);
+
+        balanceElement.textContent =
+            balance.toLocaleString("en-US", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+
+    } catch (error) {
+
+        console.error(
+            "LOAD HOME BALANCE ERROR:",
+            error
+        );
+
+        balanceElement.textContent = "0";
+    }
+}
+    // =========================
+    // ĐÃ ĐĂNG NHẬP
+    // =========================
+
+    if (userId) {
+
+        if (loginButton) {
+            loginButton.style.display = "none";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.remove("hidden");
+        }
+
+    }
+
+    // =========================
+    // CHƯA ĐĂNG NHẬP
+    // =========================
+
+    else {
+
+        if (loginButton) {
+            loginButton.style.display = "";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.add("hidden");
+        }
+
+    }
+}
+    
+function updateHomeAuthState() {
+
+    const loginButton =
+        document.getElementById(
+            "home-login-btn"
+        );
+
+    const balanceCard =
+        document.getElementById(
+            "home-balance-card"
+        );
+
+    const userId =
+        getUserId();
+
+
+    // =========================
+    // ĐÃ ĐĂNG NHẬP
+    // =========================
+
+    if (userId) {
+
+        if (loginButton) {
+            loginButton.style.display =
+                "none";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.remove(
+                "hidden"
+            );
+        }
+
+    }
+
+    // =========================
+    // CHƯA ĐĂNG NHẬP
+    // =========================
+
+    else {
+
+        if (loginButton) {
+            loginButton.style.display =
+                "";
+        }
+
+        if (balanceCard) {
+            balanceCard.classList.add(
+                "hidden"
+            );
+        }
+
+    }
+}
+
+
+function getUserId() {
+
+    return localStorage.getItem(
+        "nexora_user_id"
+    );
+
+}
+
+
 function getUsername() {
-    return localStorage.getItem("nexora_username") || "";
+
+    return localStorage.getItem(
+        "nexora_username"
+    ) || "";
+
+}
+
+
+function setUser(id, username) {
+
+    localStorage.setItem(
+        "nexora_user_id",
+        String(id)
+    );
+
+    localStorage.setItem(
+        "nexora_username",
+        username || ""
+    );
+
+}
+
+
+function clearUser() {
+
+    localStorage.removeItem(
+        "nexora_user_id"
+    );
+
+    localStorage.removeItem(
+        "nexora_username"
+    );
+
 }
 
 function setUser(id, username) {
@@ -1214,110 +1498,356 @@ async function loadProjectsFromBackend() {
 
     try {
 
-        projects =
-            await api("/projects");
+        projects = await api("/projects");
 
-
-        const cards =
-            document.querySelectorAll(
-                ".project-card"
+        const list =
+            document.getElementById(
+                "projects-list"
             );
 
+        if (!list) {
+            console.warn(
+                "Không tìm thấy #projects-list"
+            );
+            return;
+        }
 
-        if (
-            projects.length &&
-            cards.length
-        ) {
+        if (!projects || !projects.length) {
 
-            cards.forEach(
-                (card, index) => {
+            list.innerHTML = `
+                <div class="empty">
+                    Chưa có dự án.
+                </div>
+            `;
 
-                    const project =
-                        projects[
-                            index %
-                            projects.length
-                        ];
+            return;
+        }
+
+        const apiRoot =
+            API_BASE.replace(/\/api$/, "");
+
+        list.innerHTML = projects
+            .map(project => {
+
+                const logoUrl =
+                    project.logo_url
+                        ? apiRoot + project.logo_url
+                        : "";
+
+                const documentUrl =
+                    project.document_url
+                        ? apiRoot + project.document_url
+                        : "";
+
+                const profitMin =
+                    Number(project.profit_min || 0);
+
+                const profitMax =
+                    Number(project.profit_max || 0);
+
+                const raisedAmount =
+                    Number(project.raised_amount || 0);
+
+                const targetAmount =
+                    Number(project.target_amount || 0);
+
+                const raisedPercent =
+                    Math.min(
+                        Math.max(
+                            Number(
+                                project.raised_percent || 0
+                            ),
+                            0
+                        ),
+                        100
+                    );
+
+                const isOpen =
+                    project.status === "open";
+
+                const profitText =
+                    profitMin || profitMax
+                        ? `${profitMin}% - ${profitMax}%`
+                        : "—";
+
+                const minAmount =
+                    Number(
+                        project.min_amount || 0
+                    ).toLocaleString("en-US");
+
+                const raisedText =
+                    raisedAmount.toLocaleString(
+                        "en-US"
+                    );
+
+                const targetText =
+                    targetAmount.toLocaleString(
+                        "en-US"
+                    );
+
+                return `
+                    <div
+                        class="nexora-project-card"
+                        data-project-id="${project.id}"
+                    >
+
+                        <div class="nexora-project-header">
+
+                            <div class="nexora-project-logo">
+
+                                ${
+                                    logoUrl
+                                        ? `
+                                            <img
+                                                src="${logoUrl}"
+                                                alt="${project.name || "Project Logo"}"
+                                            >
+                                          `
+                                        : `
+                                            <span>NX</span>
+                                          `
+                                }
+
+                            </div>
+
+                            <div class="nexora-project-title">
+
+                                <div class="nexora-project-name">
+                                    ${project.name || "NEXORA Project"}
+                                </div>
+
+                                <div class="nexora-project-desc">
+                                    ${
+                                        project.description ||
+                                        "Dự án NEXORA"
+                                    }
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="nexora-project-status ${
+                                    isOpen
+                                        ? "open"
+                                        : "closed"
+                                }"
+                            >
+                                ${
+                                    isOpen
+                                        ? "ĐANG MỞ"
+                                        : "ĐÃ ĐÓNG"
+                                }
+                            </div>
+
+                        </div>
 
 
-                    card.dataset.projectId =
-                        project.id;
+                        <div class="nexora-project-stats">
+
+                            <div class="nexora-stat">
+                                <span>LỢI NHUẬN</span>
+                                <strong>
+                                    ${profitText}
+                                </strong>
+                            </div>
+
+                            <div class="nexora-stat">
+                                <span>THỜI HẠN</span>
+                                <strong>
+                                    ${project.duration_days || 0} Ngày
+                                </strong>
+                            </div>
+
+                            <div class="nexora-stat">
+                                <span>TỐI THIỂU</span>
+                                <strong>
+                                    ${minAmount} USDT
+                                </strong>
+                            </div>
+
+                        </div>
 
 
-                    const title =
-                        card.querySelector(
-                            ".project-title"
+                        <div class="nexora-raised">
+
+                            <div class="nexora-raised-head">
+
+                                <span>
+                                    Đã huy động
+                                </span>
+
+                                <strong>
+                                    ${raisedPercent}%
+                                </strong>
+
+                            </div>
+
+                            <div class="nexora-progress">
+
+                                <div
+                                    class="nexora-progress-bar"
+                                    style="width:${raisedPercent}%"
+                                ></div>
+
+                            </div>
+
+                            <div class="nexora-raised-amount">
+
+                                ${raisedText}
+                                /
+                                ${targetText}
+                                USDT
+
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            documentUrl
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="nexora-document-btn"
+                                    >
+                                        📄 Xem tài liệu dự án
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+
+                        <button
+                            type="button"
+                            class="nexora-invest-btn"
+                            ${isOpen ? "" : "disabled"}
+                        >
+                            ${
+                                isOpen
+                                    ? "ĐẦU TƯ NGAY"
+                                    : "DỰ ÁN ĐÃ ĐÓNG"
+                            }
+                        </button>
+
+                    </div>
+                `;
+            })
+            .join("");
+
+
+        projects.forEach(project => {
+
+            const card =
+                list.querySelector(
+                    `[data-project-id="${project.id}"]`
+                );
+
+            if (!card) {
+                return;
+            }
+
+
+            const documentButton =
+                card.querySelector(
+                    ".nexora-document-btn"
+                );
+
+            if (
+                documentButton &&
+                project.document_url
+            ) {
+
+                documentButton.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        window.open(
+                            apiRoot +
+                            project.document_url,
+                            "_blank"
                         );
 
-                    const desc =
-                        card.querySelector(
-                            ".project-desc"
-                        );
-
-                    const meta =
-                        card.querySelector(
-                            ".project-meta span"
-                        );
-
-                    const status =
-                        card.querySelector(
-                            ".project-meta strong"
-                        );
-
-
-                    if (title) {
-
-                        title.textContent =
-                            project.name;
                     }
+                );
+
+            }
 
 
-                    if (desc) {
+            const investButton =
+                card.querySelector(
+                    ".nexora-invest-btn"
+                );
 
-                        desc.textContent =
-                            project.description ||
-                            "Dự án NEXORA";
-                    }
+            if (
+                investButton &&
+                project.status === "open"
+            ) {
 
+                investButton.addEventListener(
+                    "click",
+                    event => {
 
-                    if (meta) {
+                        event.stopPropagation();
 
-                        meta.textContent =
-                            `Tối thiểu ${
-                                Number(
-                                    project.min_amount
-                                ).toLocaleString(
-                                    "en-US"
-                                )
-                            } USDT · ${
-                                project.duration_days
-                            } ngày`;
-                    }
-
-
-                    if (status) {
-
-                        status.textContent =
-                            project.status === "open"
-                                ? "Đang mở"
-                                : "Đã đóng";
-                    }
-
-
-                    card.onclick =
-                        () => openProject(
+                        openProject(
                             project
                         );
 
+                    }
+                );
+
+            }
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        project.status === "open"
+                    ) {
+
+                        openProject(
+                            project
+                        );
+
+                    } else {
+
+                        alert(
+                            "Dự án này đã đóng."
+                        );
+
+                    }
+
                 }
             );
-        }
+
+        });
 
     } catch (error) {
 
-        console.log(
-            "Projects:",
-            error.message
+        console.error(
+            "PROJECT LOAD ERROR:",
+            error
         );
+
+        const list =
+            document.getElementById(
+                "projects-list"
+            );
+
+        if (list) {
+
+            list.innerHTML = `
+                <div class="empty">
+                    Không tải được danh sách dự án.
+                </div>
+            `;
+
+        }
+
     }
 }
 
@@ -1801,14 +2331,14 @@ async function submitAuth() {
 
 
             setUser(
-                created.id,
-                created.account_username
-            );
+    created.id,
+    created.account_username
+);
 
+updateHomeAuthState();
 
-            message.textContent =
-                "Đăng ký thành công!";
-
+message.textContent =
+    "Đăng ký thành công!";
 
         } else {
 
@@ -1834,11 +2364,13 @@ async function submitAuth() {
 
 
             setUser(
-                logged.user_id,
-                logged.account_username
-            );
+    logged.user_id,
+    logged.account_username
+);
 
+updateHomeAuthState();
 
+await loadHomeBalance();
             message.textContent =
                 "Đăng nhập thành công!";
         }
@@ -1907,12 +2439,9 @@ async function openAccountPanel() {
         getUserId();
 
     if (!username || !userId) {
-
         openAuth();
-
         return;
     }
-
 
     // ================================
     // LẤY THÔNG TIN USER TỪ BACKEND
@@ -1940,7 +2469,6 @@ async function openAccountPanel() {
         );
     }
 
-
     const panel =
         document.createElement(
             "div"
@@ -1949,211 +2477,468 @@ async function openAccountPanel() {
     panel.id =
         "account-panel";
 
+    const investorId =
+        `NX-${String(userId).padStart(6, "0")}`;
 
     panel.innerHTML = `
+        <div
+            style="
+                position:fixed;
+                inset:0;
+                z-index:9999;
+                background:
+                    radial-gradient(
+                        circle at 50% 15%,
+                        rgba(30,140,255,.12),
+                        transparent 38%
+                    ),
+                    rgba(1,8,15,.82);
+                backdrop-filter:blur(16px);
+                display:flex;
+                align-items:flex-end;
+                justify-content:center;
+            "
+        >
 
-        <div style="
-            position:fixed;
-            inset:0;
-            z-index:9999;
-            background:rgba(0,0,0,.75);
-            display:flex;
-            align-items:flex-end;
-            justify-content:center;
-        ">
+            <div
+                style="
+                    width:100%;
+                    max-width:520px;
+                    box-sizing:border-box;
+                    padding:20px;
+                    color:#fff;
 
-            <div style="
-                width:100%;
-                max-width:520px;
-                background:#08111d;
-                color:#fff;
-                border:1px solid #20344b;
-                border-radius:24px 24px 0 0;
-                padding:24px;
-                box-sizing:border-box;
-            ">
+                    background:
+                        linear-gradient(
+                            145deg,
+                            #061522,
+                            #04101a 58%,
+                            #030b13
+                        );
+
+                    border:1px solid rgba(76,177,235,.28);
+                    border-radius:26px 26px 0 0;
+
+                    box-shadow:
+                        0 -18px 55px rgba(0,95,190,.16),
+                        inset 0 1px 0 rgba(255,255,255,.05);
+
+                    position:relative;
+                    overflow:hidden;
+                "
+            >
+
+                <!-- TOP SIGNAL -->
+                <div
+                    style="
+                        position:absolute;
+                        top:0;
+                        left:10%;
+                        right:10%;
+                        height:1px;
+                        background:
+                            linear-gradient(
+                                90deg,
+                                transparent,
+                                rgba(91,205,255,.25),
+                                rgba(191,239,255,.95),
+                                rgba(91,205,255,.25),
+                                transparent
+                            );
+                        box-shadow:
+                            0 0 10px rgba(67,186,255,.55);
+                    "
+                ></div>
 
                 <!-- HEADER -->
-
-                <div style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                    margin-bottom:22px;
-                ">
+                <div
+                    style="
+                        display:flex;
+                        align-items:flex-start;
+                        justify-content:space-between;
+                        margin-bottom:18px;
+                    "
+                >
 
                     <div>
 
-                        <div style="
-                            color:#718ba8;
-                            font-size:12px;
-                            margin-bottom:6px;
-                        ">
-                            TÀI KHOẢN
+                        <div
+                            style="
+                                color:#56b8ed;
+                                font-size:10px;
+                                font-weight:700;
+                                letter-spacing:2px;
+                                text-transform:uppercase;
+                                margin-bottom:7px;
+                            "
+                        >
+                            INVESTOR PROFILE
                         </div>
 
-                        <div style="
-                            font-size:22px;
-                            font-weight:700;
-                        ">
+                        <div
+                            style="
+                                font-size:24px;
+                                font-weight:800;
+                                letter-spacing:.2px;
+                                color:#f4fbff;
+                            "
+                        >
                             ${username}
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:5px;
+                                color:#647f95;
+                                font-size:10px;
+                                letter-spacing:1.1px;
+                            "
+                        >
+                            ${investorId}
                         </div>
 
                     </div>
 
-
-                    <button
-                        id="account-close"
-                        type="button"
+                    <div
                         style="
-                            width:40px;
-                            height:40px;
-                            border-radius:50%;
-                            border:1px solid #29405a;
-                            background:#101e2e;
-                            color:#fff;
-                            font-size:20px;
+                            display:flex;
+                            align-items:center;
+                            gap:7px;
+                            padding-top:3px;
                         "
                     >
-                        ×
-                    </button>
+
+                        <span
+                            style="
+                                width:7px;
+                                height:7px;
+                                border-radius:50%;
+                                background:#4ee3ab;
+                                box-shadow:
+                                    0 0 7px rgba(78,227,171,.75);
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                color:#77d9b6;
+                                font-size:9px;
+                                font-weight:700;
+                                letter-spacing:1.2px;
+                            "
+                        >
+                            ACTIVE
+                        </span>
+
+                        <button
+                            id="account-close"
+                            type="button"
+                            aria-label="Close"
+                            style="
+                                margin-left:8px;
+                                width:38px;
+                                height:38px;
+                                border-radius:50%;
+                                border:1px solid rgba(71,165,216,.32);
+                                background:#091e2f;
+                                color:#dff6ff;
+                                font-size:18px;
+                                line-height:1;
+                            "
+                        >
+                            ×
+                        </button>
+
+                    </div>
 
                 </div>
 
 
-                <!-- BALANCE -->
+                <!-- CAPITAL CORE -->
+                <div
+                    style="
+                        position:relative;
+                        padding:18px;
+                        margin-bottom:14px;
+                        border-radius:20px;
 
-                <div style="
-                    background:#0d1c2d;
-                    border:1px solid #20344b;
-                    border-radius:18px;
-                    padding:20px;
-                    margin-bottom:14px;
-                ">
+                        background:
+                            radial-gradient(
+                                circle at 14% 15%,
+                                rgba(28,144,240,.14),
+                                transparent 36%
+                            ),
+                            linear-gradient(
+                                145deg,
+                                #082137,
+                                #051521
+                            );
 
-                    <div style="
-                        color:#718ba8;
-                        font-size:13px;
-                        margin-bottom:8px;
-                    ">
-                        Số dư khả dụng
+                        border:1px solid rgba(66,170,228,.25);
+
+                        box-shadow:
+                            inset 0 0 28px rgba(18,125,220,.045),
+                            0 8px 22px rgba(0,0,0,.16);
+
+                        overflow:hidden;
+                    "
+                >
+
+                    <div
+                        style="
+                            position:absolute;
+                            top:0;
+                            left:14%;
+                            right:14%;
+                            height:1px;
+                            background:
+                                linear-gradient(
+                                    90deg,
+                                    transparent,
+                                    rgba(101,213,255,.60),
+                                    transparent
+                                );
+                        "
+                    ></div>
+
+                    <div
+                        style="
+                            color:#6f8ea8;
+                            font-size:10px;
+                            letter-spacing:1.2px;
+                            text-transform:uppercase;
+                            margin-bottom:8px;
+                        "
+                    >
+                        AVAILABLE CAPITAL
                     </div>
 
-                    <div style="
-                        font-size:28px;
-                        font-weight:700;
-                    ">
+                    <div
+                        style="
+                            display:flex;
+                            align-items:baseline;
+                            gap:9px;
+                        "
+                    >
 
-                        ${
-                            balance.toLocaleString(
+                        <span
+                            style="
+                                font-size:36px;
+                                line-height:1;
+                                font-weight:800;
+                                letter-spacing:-1px;
+                                color:#f6fcff;
+                                text-shadow:
+                                    0 0 16px rgba(72,191,255,.16);
+                            "
+                        >
+                            ${balance.toLocaleString(
                                 "en-US",
                                 {
                                     minimumFractionDigits: 0,
                                     maximumFractionDigits: 2
                                 }
-                            )
-                        }
+                            )}
+                        </span>
 
-                        <span style="
-                            font-size:13px;
-                            color:#8da3bc;
-                        ">
+                        <span
+                            style="
+                                color:#54bdf3;
+                                font-size:12px;
+                                font-weight:800;
+                                letter-spacing:1px;
+                            "
+                        >
                             USDT
                         </span>
+
+                    </div>
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:repeat(3,1fr);
+                            gap:8px;
+                            margin-top:16px;
+                        "
+                    >
+
+                        <div
+                            style="
+                                padding-top:10px;
+                                border-top:1px solid rgba(67,142,188,.12);
+                            "
+                        >
+                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
+                                CAPITAL STATUS
+                            </div>
+                            <div style="margin-top:4px;color:#9ed9bd;font-size:10px;font-weight:700;">
+                                READY
+                            </div>
+                        </div>
+
+                        <div
+                            style="
+                                padding-top:10px;
+                                border-top:1px solid rgba(67,142,188,.12);
+                            "
+                        >
+                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
+                                LIQUIDITY
+                            </div>
+                            <div style="margin-top:4px;color:#a9dff8;font-size:10px;font-weight:700;">
+                                AVAILABLE
+                            </div>
+                        </div>
+
+                        <div
+                            style="
+                                padding-top:10px;
+                                border-top:1px solid rgba(67,142,188,.12);
+                            "
+                        >
+                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
+                                ACCOUNT LEVEL
+                            </div>
+                            <div style="margin-top:4px;color:#b4cff0;font-size:10px;font-weight:700;">
+                                INVESTOR
+                            </div>
+                        </div>
 
                     </div>
 
                 </div>
 
 
-                <!-- DEPOSIT -->
-
-                <button
-                    id="account-deposit"
-                    type="button"
+                <!-- CAPITAL ACTIONS -->
+                <div
                     style="
-                        width:100%;
-                        padding:16px;
-                        margin-bottom:10px;
-                        border:none;
-                        border-radius:14px;
-                        background:#168cff;
-                        color:#fff;
-                        font-size:16px;
-                        font-weight:600;
+                        display:grid;
+                        grid-template-columns:1fr 1fr;
+                        gap:9px;
+                        margin-bottom:9px;
                     "
                 >
-                    💰 Nạp tiền
-                </button>
 
+                    <button
+                        id="account-deposit"
+                        type="button"
+                        style="
+                            width:100%;
+                            padding:14px 10px;
+                            border:1px solid rgba(68,177,237,.34);
+                            border-radius:14px;
+                            background:
+                                linear-gradient(
+                                    145deg,
+                                    #0d5f9a,
+                                    #083f68
+                                );
+                            color:#eaf9ff;
+                            font-size:12px;
+                            font-weight:750;
+                            letter-spacing:.8px;
+                        "
+                    >
+                        + &nbsp;CAPITAL IN
+                    </button>
 
-                <!-- WITHDRAW -->
+                    <button
+                        id="account-withdraw"
+                        type="button"
+                        style="
+                            width:100%;
+                            padding:14px 10px;
+                            border:1px solid rgba(68,177,237,.20);
+                            border-radius:14px;
+                            background:#071b2b;
+                            color:#cfe9f5;
+                            font-size:12px;
+                            font-weight:750;
+                            letter-spacing:.8px;
+                        "
+                    >
+                        − &nbsp;CAPITAL OUT
+                    </button>
 
-                <button
-                    id="account-withdraw"
-                    type="button"
-                    style="
-                        width:100%;
-                        padding:16px;
-                        margin-bottom:10px;
-                        border:1px solid #29405a;
-                        border-radius:14px;
-                        background:#0d1927;
-                        color:#fff;
-                        font-size:16px;
-                        font-weight:600;
-                    "
-                >
-                    💸 Rút tiền
-                </button>
+                </div>
 
 
                 <!-- HISTORY -->
-
                 <button
                     id="account-history"
                     type="button"
                     style="
                         width:100%;
-                        padding:16px;
-                        margin-bottom:10px;
-                        border:1px solid #29405a;
+                        padding:14px 16px;
+                        margin-bottom:9px;
+                        border:1px solid rgba(68,150,197,.20);
                         border-radius:14px;
-                        background:#0d1927;
-                        color:#fff;
-                        font-size:16px;
-                        font-weight:600;
+                        background:#061827;
+                        color:#cfe3ef;
+                        font-size:11px;
+                        font-weight:750;
+                        letter-spacing:1px;
+                        text-align:left;
                     "
                 >
-                    📋 Lịch sử giao dịch
+                    TRANSACTION HISTORY
+                    <span
+                        style="
+                            float:right;
+                            color:#4eb7ec;
+                            font-size:16px;
+                            line-height:12px;
+                        "
+                    >
+                        ›
+                    </span>
                 </button>
 
 
-                <!-- LOGOUT -->
-
-                <button
-                    id="account-logout"
-                    type="button"
+                <!-- FOOTER -->
+                <div
                     style="
-                        width:100%;
-                        padding:16px;
-                        margin-top:4px;
-                        border:1px solid #5a2930;
-                        border-radius:14px;
-                        background:#211116;
-                        color:#ff7180;
-                        font-size:16px;
-                        font-weight:600;
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        padding-top:8px;
                     "
                 >
-                    🚪 Đăng xuất
-                </button>
+
+                    <div
+                        style="
+                            color:#455f72;
+                            font-size:8px;
+                            letter-spacing:1px;
+                            text-transform:uppercase;
+                        "
+                    >
+                        NEXORA INVESTOR CONSOLE
+                    </div>
+
+                    <button
+                        id="account-logout"
+                        type="button"
+                        style="
+                            border:none;
+                            background:transparent;
+                            color:#d66e7c;
+                            padding:6px 0;
+                            font-size:10px;
+                            font-weight:700;
+                            letter-spacing:1px;
+                            text-transform:uppercase;
+                        "
+                    >
+                        Sign out
+                    </button>
+
+                </div>
 
             </div>
-
         </div>
     `;
-
 
     document.body.appendChild(
         panel
@@ -2165,9 +2950,7 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById(
-            "account-close"
-        )
+        .getElementById("account-close")
         ?.addEventListener(
             "click",
             () => panel.remove()
@@ -2179,15 +2962,11 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById(
-            "account-deposit"
-        )
+        .getElementById("account-deposit")
         ?.addEventListener(
             "click",
             () => {
-
                 openDepositForm();
-
             }
         );
 
@@ -2197,13 +2976,13 @@ async function openAccountPanel() {
     // ================================
 
     document
-    .getElementById("account-withdraw")
-    ?.addEventListener(
-        "click",
-        () => {
-            openWithdrawForm();
-        }
-    );
+        .getElementById("account-withdraw")
+        ?.addEventListener(
+            "click",
+            () => {
+                openWithdrawForm();
+            }
+        );
 
 
     // ================================
@@ -2211,19 +2990,14 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById
-        document
-    .getElementById("account-history")
-    ?.addEventListener(
-        "click",
-        () => {
-
-            panel.remove();
-
-            openTransactionHistory();
-
-        }
-    )
+        .getElementById("account-history")
+        ?.addEventListener(
+            "click",
+            () => {
+                panel.remove();
+                openTransactionHistory();
+            }
+        );
 
 
     // ================================
@@ -2231,9 +3005,7 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById(
-            "account-logout"
-        )
+        .getElementById("account-logout")
         ?.addEventListener(
             "click",
             () => {
@@ -2243,15 +3015,12 @@ async function openAccountPanel() {
                         "Bạn có muốn đăng xuất không?"
                     )
                 ) {
-
                     logout();
-
                 }
 
             }
-        )
+        );
 }
-
 
 /* =========================================
    NAVIGATION
@@ -2328,11 +3097,14 @@ async function boot() {
 document.addEventListener(
     "DOMContentLoaded",
     () => {
-
         console.log(
-            "NEXORA Mini App V2 loaded"
-        );
+    "NEXORA Mini App V2 loaded"
+);
 
+updateHomeAuthState();
+
+loadHomeBalance();
+        
 
         const avatar =
             document.querySelector(

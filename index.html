@@ -6,6 +6,470 @@
   <title>NEXORA Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="style.css">
+
+<style>
+body.ranking-open {
+  overflow: hidden;
+}
+
+#ranking-page {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: none;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(21, 136, 255, .18), transparent 34%),
+    linear-gradient(180deg, #020914 0%, #031120 48%, #020810 100%);
+  color: #e9f5ff;
+  box-sizing: border-box;
+}
+
+.ranking-shell {
+  width: min(100%, 980px);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 14px 18px 28px;
+  box-sizing: border-box;
+}
+
+.ranking-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ranking-back,
+.ranking-help {
+  border: 0;
+  background: transparent;
+  color: #e8f5ff;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.ranking-title-wrap {
+  text-align: center;
+  flex: 1;
+}
+
+.ranking-title-wrap h2 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: .3px;
+}
+
+.ranking-subtitle {
+  margin-top: 3px;
+  color: #4fa8ff;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.ranking-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ranking-tab {
+  min-height: 74px;
+  border: 1px solid #183c60;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #091a2b, #07131f);
+  color: #c8d9ea;
+  padding: 10px;
+  text-align: left;
+}
+
+.ranking-tab.active {
+  border-color: #1c9bff;
+  box-shadow: 0 0 18px rgba(16, 145, 255, .28), inset 0 0 18px rgba(16, 145, 255, .08);
+}
+
+.ranking-tab strong,
+.ranking-tab span {
+  display: block;
+}
+
+.ranking-tab strong {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.ranking-tab span {
+  color: #7f9ab5;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.ranking-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #83a0bc;
+  font-size: 10px;
+  margin: 10px 2px;
+  flex-wrap: wrap;
+}
+
+.ranking-podium {
+  display: grid;
+  grid-template-columns: 1fr 1.08fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.ranking-top-card {
+  position: relative;
+  border: 1px solid #254461;
+  border-radius: 18px;
+  padding: 12px 10px 11px;
+  text-align: center;
+  background: linear-gradient(180deg, #071523, #050f19);
+  box-shadow: inset 0 0 24px rgba(21, 143, 255, .05);
+}
+
+.ranking-top-card.gold {
+  min-height: 310px;
+  border-color: #8f6b18;
+  background: linear-gradient(180deg, #161105, #0c0a06);
+  box-shadow: 0 0 24px rgba(255, 196, 43, .12), inset 0 0 24px rgba(255, 190, 30, .06);
+}
+
+.ranking-top-card.silver { border-color: #476071; }
+.ranking-top-card.bronze { border-color: #6c4426; }
+
+.ranking-medal {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(180deg, #f8cf52, #8a5b0d);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+
+.silver .ranking-medal { background: linear-gradient(180deg, #d8e7f3, #59768d); }
+.bronze .ranking-medal { background: linear-gradient(180deg, #dc9864, #73401f); }
+
+.ranking-avatar {
+  width: 78px;
+  height: 78px;
+  margin: 18px auto 9px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid #2c9cff;
+  background: radial-gradient(circle at 50% 35%, #173b5d, #02070d 72%);
+  box-shadow: 0 0 18px rgba(0, 157, 255, .2);
+}
+
+.ranking-avatar span {
+  font-size: 35px;
+  font-weight: 900;
+  color: #4aaaff;
+}
+
+.ranking-person-name {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.ranking-label {
+  color: #7d95ab;
+  font-size: 9px;
+  margin-bottom: 4px;
+}
+
+.ranking-value {
+  color: #52bcff;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.gold .ranking-value { color: #ffd34f; }
+.bronze .ranking-value { color: #f0a35f; }
+
+.ranking-value small { font-size: 10px; font-weight: 700; }
+
+.ranking-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ranking-mini-grid > div {
+  border: 1px solid #1c3349;
+  border-radius: 10px;
+  padding: 7px 4px;
+}
+
+.ranking-mini-grid span,
+.ranking-mini-grid strong {
+  display: block;
+}
+
+.ranking-mini-grid span { color: #6e879f; font-size: 8px; }
+.ranking-mini-grid strong { color: #e7f4ff; font-size: 11px; margin-top: 3px; }
+.ranking-mini-grid small { font-size: 8px; }
+
+.ranking-panel {
+  margin-top: 12px;
+  border: 1px solid #174873;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(4, 20, 34, .95), rgba(3, 12, 22, .96));
+  box-shadow: inset 0 0 24px rgba(17, 139, 255, .04);
+  overflow: hidden;
+}
+
+.ranking-panel-title {
+  padding: 12px 14px;
+  border-bottom: 1px solid #153650;
+  color: #3eb0ff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.ranking-table-wrap {
+  overflow-x: auto;
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+  font-size: 11px;
+}
+
+.ranking-table th,
+.ranking-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #11263a;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ranking-table th {
+  color: #7f9ab5;
+  font-weight: 700;
+  background: rgba(10, 33, 54, .5);
+}
+
+.ranking-table td:nth-child(3),
+.ranking-table td:nth-child(5) { color: #67d95d; }
+
+.ranking-user-dot {
+  display: inline-block;
+  margin-right: 7px;
+  color: #7da1c2;
+}
+
+.your-ranking { padding-bottom: 14px; }
+
+.your-rank-grid {
+  display: grid;
+  grid-template-columns: 110px 1.35fr repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+
+.your-rank-number,
+.your-rank-user,
+.your-stat {
+  min-height: 94px;
+  border: 1px solid #173b5b;
+  border-radius: 12px;
+  background: #061221;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.your-rank-number {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.your-rank-number strong {
+  color: #41c9ff;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.your-rank-number span,
+.your-stat span,
+.your-stat small,
+.your-rank-user span {
+  color: #7d96ad;
+  font-size: 8px;
+}
+
+.your-rank-user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ranking-avatar.large {
+  width: 55px;
+  height: 55px;
+  margin: 0;
+}
+
+.ranking-avatar.large span { font-size: 25px; }
+
+.your-rank-user strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.your-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.your-stat strong {
+  color: #27b8ff;
+  font-size: 19px;
+  margin-top: 5px;
+}
+
+.your-stat strong small { font-size: 9px; }
+
+.ranking-lower-grid {
+  display: grid;
+  grid-template-columns: 1.25fr .95fr;
+  gap: 12px;
+}
+
+.reward-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+
+.reward-list > div {
+  padding: 10px;
+  border: 1px solid #173b5b;
+  border-radius: 11px;
+  background: #061221;
+}
+
+.reward-list b,
+.reward-list strong,
+.reward-list span,
+.reward-list small {
+  display: block;
+}
+
+.reward-list b { font-size: 18px; }
+.reward-list strong { margin-top: 4px; font-size: 15px; color: #ffd34f; }
+.reward-list span { font-size: 9px; color: #91abc2; }
+.reward-list small { margin-top: 5px; color: #7d96ad; font-size: 8px; }
+
+.countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 12px;
+}
+
+.countdown-row > div {
+  text-align: center;
+  padding: 10px 4px;
+  border-radius: 10px;
+  background: #061221;
+  border: 1px solid #173b5b;
+}
+
+.countdown-row strong,
+.countdown-row span {
+  display: block;
+}
+
+.countdown-row strong { color: #eff9ff; font-size: 24px; }
+.countdown-row span { color: #718ba3; font-size: 8px; margin-top: 4px; }
+
+.ranking-footer-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ranking-footer-tabs button {
+  min-height: 46px;
+  border: 1px solid #193d5b;
+  border-radius: 11px;
+  background: #061424;
+  color: #cfe1ef;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ranking-footer-tabs button.active {
+  background: linear-gradient(180deg, #117bdd, #0b4f94);
+  border-color: #269dff;
+  box-shadow: 0 0 15px rgba(25, 147, 255, .25);
+}
+
+.ranking-demo-note {
+  text-align: center;
+  color: #6f879c;
+  font-size: 9px;
+  margin-top: 10px;
+}
+
+.ranking-home-entry {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #174873;
+  background: linear-gradient(180deg, #071a2d, #061320);
+  color: #fff;
+  text-align: left;
+}
+
+.ranking-home-icon { font-size: 22px; }
+.ranking-home-entry strong,
+.ranking-home-entry small { display: block; }
+.ranking-home-entry strong { font-size: 13px; }
+.ranking-home-entry small { margin-top: 3px; color: #7892ab; font-size: 9px; }
+.ranking-home-arrow { margin-left: auto; font-size: 25px; color: #43adff; }
+
+@media (max-width: 700px) {
+  .ranking-shell { padding: 10px 10px 22px; }
+  .ranking-title-wrap h2 { font-size: 20px; }
+  .ranking-tabs { grid-template-columns: 1fr; }
+  .ranking-podium { grid-template-columns: 1fr; }
+  .ranking-top-card.gold { order: -1; min-height: 0; }
+  .your-rank-grid { grid-template-columns: 1fr 1fr; }
+  .your-rank-user { grid-column: span 2; }
+  .ranking-lower-grid { grid-template-columns: 1fr; }
+  .ranking-footer-tabs { grid-template-columns: 1fr 1fr; }
+}
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -14,15 +478,29 @@
         <img class="nexora-logo" src="./logo.png" alt="NEXORA">
         <h1></h1>
       </div>
-      <button class="login-image-btn" onclick="openAuth()">
-    <img src="./login-button.png" alt="Đăng Nhập">
+      <button
+        id="home-login-btn"
+    class="login-image-btn"
+    type="button"
+    onclick="openAuth()"
+>
+    <img
+        src="./login-button.png"
+        alt="Đăng Nhập"
+    >
 </button>
     </header>
 
     <main>
-      <section class="balance-card">
-        <div class="balance-label">Số dư khả dụng</div> 
-        <div class="balance">1,250,000 <span>USDT</span></div>
+      <section
+        class="balance-card hidden"
+        id="home-balance-card"
+      >
+        <div class="balance-label">Số dư khả dụng</div>
+        <div class="balance">
+          <span id="home-balance">0</span>
+          <span>USDT</span>
+        </div>
         <div class="balance-note">Tài khoản Demo</div>
       </section>
 
@@ -31,32 +509,7 @@
           <h2>Dự án nổi bật</h2>
           <button class="text-btn" onclick="showPage('projects')">Xem tất cả</button>
         </div>
-
-        <div class="project-card" onclick="openProject('Nexora Growth Fund')">
-          <div class="project-icon">NX</div>
-          <div class="project-main">
-            <div class="project-title">Nexora Growth Fund</div>
-            <div class="project-desc">Dự án đầu tư chiến lược</div>
-            <div class="project-meta">
-              <span>Thời hạn 90 ngày</span>
-              <strong>+12.5%</strong>
-            </div>
-          </div>
-          <span class="arrow">›</span>
-        </div>
-
-        <div class="project-card" onclick="openProject('Nexora Strategic Fund')">
-          <div class="project-icon purple">NS</div>
-          <div class="project-main">
-            <div class="project-title">Nexora Strategic Fund</div>
-            <div class="project-desc">Danh mục tăng trưởng</div>
-            <div class="project-meta">
-              <span>Thời hạn 180 ngày</span>
-              <strong>+25%</strong>
-            </div>
-          </div>
-          <span class="arrow">›</span>
-        </div>
+        <div id="projects-list"></div>
       </section>
 
       <section class="quick-actions">
@@ -71,6 +524,21 @@
         <button onclick="showPage('profile')">
           <span>◉</span>
           <small>Tài khoản</small>
+        </button>
+      </section>
+
+      <section class="section">
+        <button
+          type="button"
+          class="ranking-home-entry"
+          onclick="showPage('ranking')"
+        >
+          <span class="ranking-home-icon">🏆</span>
+          <span>
+            <strong>Bảng xếp hạng nhà đầu tư</strong>
+            <small>Dữ liệu demo · Top 10 nhà đầu tư</small>
+          </span>
+          <span class="ranking-home-arrow">›</span>
         </button>
       </section>
 
@@ -91,6 +559,20 @@
     </nav>
   </div>
 
+
+  <div id="ranking-page">
+    <div class="ranking-shell">
+      <div class="ranking-topbar">
+        <button class="ranking-back" type="button" onclick="closeRankingPage()">← Quay lại</button>
+        <div class="ranking-title-wrap">
+          <h2>🏆 BẢNG XẾP HẠNG NHÀ ĐẦU TƯ</h2>
+          <div class="ranking-subtitle">NEXORA INVESTMENT</div>
+        </div>
+        <button class="ranking-help" type="button" onclick="alert('Đây là bảng xếp hạng demo. Dữ liệu không lấy từ giao dịch thực.')">ⓘ Hướng dẫn</button>
+      </div>
+      <div id="ranking-content"></div>
+    </div>
+  </div>
 
   <div class="modal hidden" id="auth-modal">
     <div class="modal-backdrop"></div>
@@ -141,7 +623,7 @@
       </div>
 
       <div class="summary">
-        <div><span>Số dư hiện tại</span><strong>1,250,000 USDT</strong></div>
+        <div><span>Số dư hiện tại</span><strong><span id="modal-home-balance">0</span> USDT</strong></div>
         <div><span>Trạng thái</span><strong class="pending">Chờ admin duyệt</strong></div>
       </div>
 
