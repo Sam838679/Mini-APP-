@@ -453,50 +453,28 @@ let orders = [];
 ========================================= */
 
 function getUserId() {
-    function updateHomeAuthState() {
-        async function loadHomeBalance() {
-
-    const balanceElement =
-        document.getElementById("home-balance");
-
-    if (!balanceElement) {
-        return;
-    }
-
-    const userId =
-        getUserId();
-
-    if (!userId) {
-
-        balanceElement.textContent = "0";
-
-        return;
-    }
-
-    try {
-
-        const user =
-            await api(`/users/${userId}`);
-
-        const balance =
-            Number(user.balance || 0);
-
-        balanceElement.textContent =
-            balance.toLocaleString("en-US", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            });
-
-    } catch (error) {
-
-        console.error(
-            "LOAD HOME BALANCE ERROR:",
-            error
-        );
-
-        balanceElement.textContent = "0";
-    }
+    return localStorage.getItem("nexora_user_id");
 }
+
+function getUsername() {
+    return localStorage.getItem("nexora_username") || "";
+}
+
+function setUser(id, username) {
+    localStorage.setItem("nexora_user_id", String(id));
+    localStorage.setItem("nexora_username", username || "");
+}
+
+function clearUser() {
+    localStorage.removeItem("nexora_user_id");
+    localStorage.removeItem("nexora_username");
+}
+
+/* =========================================
+   HOME AUTH / BALANCE
+========================================= */
+
+function updateHomeAuthState() {
 
     const loginButton =
         document.getElementById("home-login-btn");
@@ -504,95 +482,35 @@ function getUserId() {
     const balanceCard =
         document.getElementById("home-balance-card");
 
-    const userId =
-        getUserId();
+    const userId = getUserId();
 
     if (userId) {
-
-        if (loginButton) {
-            loginButton.style.display = "none";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.remove("hidden");
-        }
-
+        if (loginButton) loginButton.style.display = "none";
+        if (balanceCard) balanceCard.classList.remove("hidden");
     } else {
-
-        if (loginButton) {
-            loginButton.style.display = "";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.add("hidden");
-        }
+        if (loginButton) loginButton.style.display = "";
+        if (balanceCard) balanceCard.classList.add("hidden");
     }
 }
-    function updateHomeAuthState() {
 
-    const loginButton =
-        document.getElementById(
-            "home-login-btn"
-        );
-
-    const balanceCard =
-        document.getElementById(
-            "home-balance-card"
-        );
-
-    const userId =
-        getUserId();
-if (userId) {
-
-        if (loginButton) {
-            loginButton.style.display = "none";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.remove(
-                "hidden"
-            );
-        }
-
-    } else {
-
-        if (loginButton) {
-            loginButton.style.display = "";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.add(
-                "hidden"
-            );
-        }
-    }
-}
 async function loadHomeBalance() {
 
     const balanceElement =
         document.getElementById("home-balance");
 
-    if (!balanceElement) {
-        return;
-    }
+    if (!balanceElement) return;
 
-    const userId =
-        getUserId();
+    const userId = getUserId();
 
     if (!userId) {
-
         balanceElement.textContent = "0";
-
         return;
     }
 
     try {
+        const user = await api(`/users/${userId}`);
 
-        const user =
-            await api(`/users/${userId}`);
-
-        const balance =
-            Number(user.balance || 0);
+        const balance = Number(user.balance || 0);
 
         balanceElement.textContent =
             balance.toLocaleString("en-US", {
@@ -601,164 +519,9 @@ async function loadHomeBalance() {
             });
 
     } catch (error) {
-
-        console.error(
-            "LOAD HOME BALANCE ERROR:",
-            error
-        );
-
+        console.error("LOAD HOME BALANCE ERROR:", error);
         balanceElement.textContent = "0";
     }
-}
-    // =========================
-    // ĐÃ ĐĂNG NHẬP
-    // =========================
-
-    if (userId) {
-
-        if (loginButton) {
-            loginButton.style.display = "none";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.remove("hidden");
-        }
-
-    }
-
-    // =========================
-    // CHƯA ĐĂNG NHẬP
-    // =========================
-
-    else {
-
-        if (loginButton) {
-            loginButton.style.display = "";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.add("hidden");
-        }
-
-    }
-}
-    
-function updateHomeAuthState() {
-
-    const loginButton =
-        document.getElementById(
-            "home-login-btn"
-        );
-
-    const balanceCard =
-        document.getElementById(
-            "home-balance-card"
-        );
-
-    const userId =
-        getUserId();
-
-
-    // =========================
-    // ĐÃ ĐĂNG NHẬP
-    // =========================
-
-    if (userId) {
-
-        if (loginButton) {
-            loginButton.style.display =
-                "none";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.remove(
-                "hidden"
-            );
-        }
-
-    }
-
-    // =========================
-    // CHƯA ĐĂNG NHẬP
-    // =========================
-
-    else {
-
-        if (loginButton) {
-            loginButton.style.display =
-                "";
-        }
-
-        if (balanceCard) {
-            balanceCard.classList.add(
-                "hidden"
-            );
-        }
-
-    }
-}
-
-
-function getUserId() {
-
-    return localStorage.getItem(
-        "nexora_user_id"
-    );
-
-}
-
-
-function getUsername() {
-
-    return localStorage.getItem(
-        "nexora_username"
-    ) || "";
-
-}
-
-
-function setUser(id, username) {
-
-    localStorage.setItem(
-        "nexora_user_id",
-        String(id)
-    );
-
-    localStorage.setItem(
-        "nexora_username",
-        username || ""
-    );
-
-}
-
-
-function clearUser() {
-
-    localStorage.removeItem(
-        "nexora_user_id"
-    );
-
-    localStorage.removeItem(
-        "nexora_username"
-    );
-
-}
-
-function setUser(id, username) {
-    localStorage.setItem(
-        "nexora_user_id",
-        String(id)
-    );
-
-    localStorage.setItem(
-        "nexora_username",
-        username || ""
-    );
-}
-
-function clearUser() {
-    localStorage.removeItem("nexora_user_id");
-    localStorage.removeItem("nexora_username");
 }
 
 
@@ -2439,9 +2202,12 @@ async function openAccountPanel() {
         getUserId();
 
     if (!username || !userId) {
+
         openAuth();
+
         return;
     }
+
 
     // ================================
     // LẤY THÔNG TIN USER TỪ BACKEND
@@ -2469,6 +2235,7 @@ async function openAccountPanel() {
         );
     }
 
+
     const panel =
         document.createElement(
             "div"
@@ -2477,468 +2244,211 @@ async function openAccountPanel() {
     panel.id =
         "account-panel";
 
-    const investorId =
-        `NX-${String(userId).padStart(6, "0")}`;
 
     panel.innerHTML = `
-        <div
-            style="
-                position:fixed;
-                inset:0;
-                z-index:9999;
-                background:
-                    radial-gradient(
-                        circle at 50% 15%,
-                        rgba(30,140,255,.12),
-                        transparent 38%
-                    ),
-                    rgba(1,8,15,.82);
-                backdrop-filter:blur(16px);
-                display:flex;
-                align-items:flex-end;
-                justify-content:center;
-            "
-        >
 
-            <div
-                style="
-                    width:100%;
-                    max-width:520px;
-                    box-sizing:border-box;
-                    padding:20px;
-                    color:#fff;
+        <div style="
+            position:fixed;
+            inset:0;
+            z-index:9999;
+            background:rgba(0,0,0,.75);
+            display:flex;
+            align-items:flex-end;
+            justify-content:center;
+        ">
 
-                    background:
-                        linear-gradient(
-                            145deg,
-                            #061522,
-                            #04101a 58%,
-                            #030b13
-                        );
-
-                    border:1px solid rgba(76,177,235,.28);
-                    border-radius:26px 26px 0 0;
-
-                    box-shadow:
-                        0 -18px 55px rgba(0,95,190,.16),
-                        inset 0 1px 0 rgba(255,255,255,.05);
-
-                    position:relative;
-                    overflow:hidden;
-                "
-            >
-
-                <!-- TOP SIGNAL -->
-                <div
-                    style="
-                        position:absolute;
-                        top:0;
-                        left:10%;
-                        right:10%;
-                        height:1px;
-                        background:
-                            linear-gradient(
-                                90deg,
-                                transparent,
-                                rgba(91,205,255,.25),
-                                rgba(191,239,255,.95),
-                                rgba(91,205,255,.25),
-                                transparent
-                            );
-                        box-shadow:
-                            0 0 10px rgba(67,186,255,.55);
-                    "
-                ></div>
+            <div style="
+                width:100%;
+                max-width:520px;
+                background:#08111d;
+                color:#fff;
+                border:1px solid #20344b;
+                border-radius:24px 24px 0 0;
+                padding:24px;
+                box-sizing:border-box;
+            ">
 
                 <!-- HEADER -->
-                <div
-                    style="
-                        display:flex;
-                        align-items:flex-start;
-                        justify-content:space-between;
-                        margin-bottom:18px;
-                    "
-                >
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:22px;
+                ">
 
                     <div>
 
-                        <div
-                            style="
-                                color:#56b8ed;
-                                font-size:10px;
-                                font-weight:700;
-                                letter-spacing:2px;
-                                text-transform:uppercase;
-                                margin-bottom:7px;
-                            "
-                        >
-                            INVESTOR PROFILE
+                        <div style="
+                            color:#718ba8;
+                            font-size:12px;
+                            margin-bottom:6px;
+                        ">
+                            TÀI KHOẢN
                         </div>
 
-                        <div
-                            style="
-                                font-size:24px;
-                                font-weight:800;
-                                letter-spacing:.2px;
-                                color:#f4fbff;
-                            "
-                        >
+                        <div style="
+                            font-size:22px;
+                            font-weight:700;
+                        ">
                             ${username}
                         </div>
 
-                        <div
-                            style="
-                                margin-top:5px;
-                                color:#647f95;
-                                font-size:10px;
-                                letter-spacing:1.1px;
-                            "
-                        >
-                            ${investorId}
-                        </div>
-
                     </div>
 
-                    <div
+
+                    <button
+                        id="account-close"
+                        type="button"
                         style="
-                            display:flex;
-                            align-items:center;
-                            gap:7px;
-                            padding-top:3px;
+                            width:40px;
+                            height:40px;
+                            border-radius:50%;
+                            border:1px solid #29405a;
+                            background:#101e2e;
+                            color:#fff;
+                            font-size:20px;
                         "
                     >
-
-                        <span
-                            style="
-                                width:7px;
-                                height:7px;
-                                border-radius:50%;
-                                background:#4ee3ab;
-                                box-shadow:
-                                    0 0 7px rgba(78,227,171,.75);
-                            "
-                        ></span>
-
-                        <span
-                            style="
-                                color:#77d9b6;
-                                font-size:9px;
-                                font-weight:700;
-                                letter-spacing:1.2px;
-                            "
-                        >
-                            ACTIVE
-                        </span>
-
-                        <button
-                            id="account-close"
-                            type="button"
-                            aria-label="Close"
-                            style="
-                                margin-left:8px;
-                                width:38px;
-                                height:38px;
-                                border-radius:50%;
-                                border:1px solid rgba(71,165,216,.32);
-                                background:#091e2f;
-                                color:#dff6ff;
-                                font-size:18px;
-                                line-height:1;
-                            "
-                        >
-                            ×
-                        </button>
-
-                    </div>
+                        ×
+                    </button>
 
                 </div>
 
 
-                <!-- CAPITAL CORE -->
-                <div
-                    style="
-                        position:relative;
-                        padding:18px;
-                        margin-bottom:14px;
-                        border-radius:20px;
+                <!-- BALANCE -->
 
-                        background:
-                            radial-gradient(
-                                circle at 14% 15%,
-                                rgba(28,144,240,.14),
-                                transparent 36%
-                            ),
-                            linear-gradient(
-                                145deg,
-                                #082137,
-                                #051521
-                            );
+                <div style="
+                    background:#0d1c2d;
+                    border:1px solid #20344b;
+                    border-radius:18px;
+                    padding:20px;
+                    margin-bottom:14px;
+                ">
 
-                        border:1px solid rgba(66,170,228,.25);
-
-                        box-shadow:
-                            inset 0 0 28px rgba(18,125,220,.045),
-                            0 8px 22px rgba(0,0,0,.16);
-
-                        overflow:hidden;
-                    "
-                >
-
-                    <div
-                        style="
-                            position:absolute;
-                            top:0;
-                            left:14%;
-                            right:14%;
-                            height:1px;
-                            background:
-                                linear-gradient(
-                                    90deg,
-                                    transparent,
-                                    rgba(101,213,255,.60),
-                                    transparent
-                                );
-                        "
-                    ></div>
-
-                    <div
-                        style="
-                            color:#6f8ea8;
-                            font-size:10px;
-                            letter-spacing:1.2px;
-                            text-transform:uppercase;
-                            margin-bottom:8px;
-                        "
-                    >
-                        AVAILABLE CAPITAL
+                    <div style="
+                        color:#718ba8;
+                        font-size:13px;
+                        margin-bottom:8px;
+                    ">
+                        Số dư khả dụng
                     </div>
 
-                    <div
-                        style="
-                            display:flex;
-                            align-items:baseline;
-                            gap:9px;
-                        "
-                    >
+                    <div style="
+                        font-size:28px;
+                        font-weight:700;
+                    ">
 
-                        <span
-                            style="
-                                font-size:36px;
-                                line-height:1;
-                                font-weight:800;
-                                letter-spacing:-1px;
-                                color:#f6fcff;
-                                text-shadow:
-                                    0 0 16px rgba(72,191,255,.16);
-                            "
-                        >
-                            ${balance.toLocaleString(
+                        ${
+                            balance.toLocaleString(
                                 "en-US",
                                 {
                                     minimumFractionDigits: 0,
                                     maximumFractionDigits: 2
                                 }
-                            )}
-                        </span>
+                            )
+                        }
 
-                        <span
-                            style="
-                                color:#54bdf3;
-                                font-size:12px;
-                                font-weight:800;
-                                letter-spacing:1px;
-                            "
-                        >
+                        <span style="
+                            font-size:13px;
+                            color:#8da3bc;
+                        ">
                             USDT
                         </span>
 
                     </div>
 
-                    <div
-                        style="
-                            display:grid;
-                            grid-template-columns:repeat(3,1fr);
-                            gap:8px;
-                            margin-top:16px;
-                        "
-                    >
-
-                        <div
-                            style="
-                                padding-top:10px;
-                                border-top:1px solid rgba(67,142,188,.12);
-                            "
-                        >
-                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
-                                CAPITAL STATUS
-                            </div>
-                            <div style="margin-top:4px;color:#9ed9bd;font-size:10px;font-weight:700;">
-                                READY
-                            </div>
-                        </div>
-
-                        <div
-                            style="
-                                padding-top:10px;
-                                border-top:1px solid rgba(67,142,188,.12);
-                            "
-                        >
-                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
-                                LIQUIDITY
-                            </div>
-                            <div style="margin-top:4px;color:#a9dff8;font-size:10px;font-weight:700;">
-                                AVAILABLE
-                            </div>
-                        </div>
-
-                        <div
-                            style="
-                                padding-top:10px;
-                                border-top:1px solid rgba(67,142,188,.12);
-                            "
-                        >
-                            <div style="color:#536e84;font-size:8px;letter-spacing:1px;">
-                                ACCOUNT LEVEL
-                            </div>
-                            <div style="margin-top:4px;color:#b4cff0;font-size:10px;font-weight:700;">
-                                INVESTOR
-                            </div>
-                        </div>
-
-                    </div>
-
                 </div>
 
 
-                <!-- CAPITAL ACTIONS -->
-                <div
+                <!-- DEPOSIT -->
+
+                <button
+                    id="account-deposit"
+                    type="button"
                     style="
-                        display:grid;
-                        grid-template-columns:1fr 1fr;
-                        gap:9px;
-                        margin-bottom:9px;
+                        width:100%;
+                        padding:16px;
+                        margin-bottom:10px;
+                        border:none;
+                        border-radius:14px;
+                        background:#168cff;
+                        color:#fff;
+                        font-size:16px;
+                        font-weight:600;
                     "
                 >
+                    💰 Nạp tiền
+                </button>
 
-                    <button
-                        id="account-deposit"
-                        type="button"
-                        style="
-                            width:100%;
-                            padding:14px 10px;
-                            border:1px solid rgba(68,177,237,.34);
-                            border-radius:14px;
-                            background:
-                                linear-gradient(
-                                    145deg,
-                                    #0d5f9a,
-                                    #083f68
-                                );
-                            color:#eaf9ff;
-                            font-size:12px;
-                            font-weight:750;
-                            letter-spacing:.8px;
-                        "
-                    >
-                        + &nbsp;CAPITAL IN
-                    </button>
 
-                    <button
-                        id="account-withdraw"
-                        type="button"
-                        style="
-                            width:100%;
-                            padding:14px 10px;
-                            border:1px solid rgba(68,177,237,.20);
-                            border-radius:14px;
-                            background:#071b2b;
-                            color:#cfe9f5;
-                            font-size:12px;
-                            font-weight:750;
-                            letter-spacing:.8px;
-                        "
-                    >
-                        − &nbsp;CAPITAL OUT
-                    </button>
+                <!-- WITHDRAW -->
 
-                </div>
+                <button
+                    id="account-withdraw"
+                    type="button"
+                    style="
+                        width:100%;
+                        padding:16px;
+                        margin-bottom:10px;
+                        border:1px solid #29405a;
+                        border-radius:14px;
+                        background:#0d1927;
+                        color:#fff;
+                        font-size:16px;
+                        font-weight:600;
+                    "
+                >
+                    💸 Rút tiền
+                </button>
 
 
                 <!-- HISTORY -->
+
                 <button
                     id="account-history"
                     type="button"
                     style="
                         width:100%;
-                        padding:14px 16px;
-                        margin-bottom:9px;
-                        border:1px solid rgba(68,150,197,.20);
+                        padding:16px;
+                        margin-bottom:10px;
+                        border:1px solid #29405a;
                         border-radius:14px;
-                        background:#061827;
-                        color:#cfe3ef;
-                        font-size:11px;
-                        font-weight:750;
-                        letter-spacing:1px;
-                        text-align:left;
+                        background:#0d1927;
+                        color:#fff;
+                        font-size:16px;
+                        font-weight:600;
                     "
                 >
-                    TRANSACTION HISTORY
-                    <span
-                        style="
-                            float:right;
-                            color:#4eb7ec;
-                            font-size:16px;
-                            line-height:12px;
-                        "
-                    >
-                        ›
-                    </span>
+                    📋 Lịch sử giao dịch
                 </button>
 
 
-                <!-- FOOTER -->
-                <div
+                <!-- LOGOUT -->
+
+                <button
+                    id="account-logout"
+                    type="button"
                     style="
-                        display:flex;
-                        align-items:center;
-                        justify-content:space-between;
-                        padding-top:8px;
+                        width:100%;
+                        padding:16px;
+                        margin-top:4px;
+                        border:1px solid #5a2930;
+                        border-radius:14px;
+                        background:#211116;
+                        color:#ff7180;
+                        font-size:16px;
+                        font-weight:600;
                     "
                 >
-
-                    <div
-                        style="
-                            color:#455f72;
-                            font-size:8px;
-                            letter-spacing:1px;
-                            text-transform:uppercase;
-                        "
-                    >
-                        NEXORA INVESTOR CONSOLE
-                    </div>
-
-                    <button
-                        id="account-logout"
-                        type="button"
-                        style="
-                            border:none;
-                            background:transparent;
-                            color:#d66e7c;
-                            padding:6px 0;
-                            font-size:10px;
-                            font-weight:700;
-                            letter-spacing:1px;
-                            text-transform:uppercase;
-                        "
-                    >
-                        Sign out
-                    </button>
-
-                </div>
+                    🚪 Đăng xuất
+                </button>
 
             </div>
+
         </div>
     `;
+
 
     document.body.appendChild(
         panel
@@ -2950,7 +2460,9 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById("account-close")
+        .getElementById(
+            "account-close"
+        )
         ?.addEventListener(
             "click",
             () => panel.remove()
@@ -2962,11 +2474,15 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById("account-deposit")
+        .getElementById(
+            "account-deposit"
+        )
         ?.addEventListener(
             "click",
             () => {
+
                 openDepositForm();
+
             }
         );
 
@@ -2976,13 +2492,13 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById("account-withdraw")
-        ?.addEventListener(
-            "click",
-            () => {
-                openWithdrawForm();
-            }
-        );
+    .getElementById("account-withdraw")
+    ?.addEventListener(
+        "click",
+        () => {
+            openWithdrawForm();
+        }
+    );
 
 
     // ================================
@@ -2990,14 +2506,19 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById("account-history")
-        ?.addEventListener(
-            "click",
-            () => {
-                panel.remove();
-                openTransactionHistory();
-            }
-        );
+        .getElementById
+        document
+    .getElementById("account-history")
+    ?.addEventListener(
+        "click",
+        () => {
+
+            panel.remove();
+
+            openTransactionHistory();
+
+        }
+    )
 
 
     // ================================
@@ -3005,7 +2526,9 @@ async function openAccountPanel() {
     // ================================
 
     document
-        .getElementById("account-logout")
+        .getElementById(
+            "account-logout"
+        )
         ?.addEventListener(
             "click",
             () => {
@@ -3015,12 +2538,15 @@ async function openAccountPanel() {
                         "Bạn có muốn đăng xuất không?"
                     )
                 ) {
+
                     logout();
+
                 }
 
             }
-        );
+        )
 }
+
 
 /* =========================================
    NAVIGATION
